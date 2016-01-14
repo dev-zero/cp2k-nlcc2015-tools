@@ -56,6 +56,9 @@ BLOCK_RE = regex.compile(r'''
 )?
 \s* # now consume any more whitespace (required for fullmatch)
         ''', regex.X | regex.M | regex.V1)
+SECTIONNAME_RE=regex.compile(r'''
+psppar\.(?P<element>\w+)\s+\((?P<config>q\d+)\)
+''', regex.X)
 
 def simplify_array(arr):
     '''
@@ -88,10 +91,14 @@ if __name__ == '__main__':
             print("Parsing failed for one section: {}".format(sectionname))
             continue
 
+        entry = { k: simplify_array(v) for k, v in block_m.capturesdict().items() }
 
-        entries.append({
-            k: simplify_array(v) for k, v in block_m.capturesdict().items()
-            })
+        sectionname_m = SECTIONNAME_RE.fullmatch(sectionname)
+        if sectionname_m.group('element') != block_m.group('element'):
+            print("WARNING: element symbol in pseudo description does not match section title for '{}', using section title element instead".format(sectionname))
+            entry['element'] = sectionname_m.group('element')
+
+        entries.append(entry)
 
     with open('nlcc_params.json', 'w') as f:
         json.dump(entries, f, indent=2)
