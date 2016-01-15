@@ -86,14 +86,15 @@ if __name__ == '__main__':
         block_m = BLOCK_RE.fullmatch(e.text)
 
         sectionname = e.getprevious().text_content().strip()
+        sectionname_m = SECTIONNAME_RE.fullmatch(sectionname)
 
-        if block_m is None:
+        if block_m is None or sectionname_m is None:
             print("Parsing failed for one section: {}".format(sectionname))
             continue
 
-        entry = { k: simplify_array(v) for k, v in block_m.capturesdict().items() }
+        entry = { k: simplify_array(v)
+                for k, v in block_m.capturesdict().items() }
 
-        sectionname_m = SECTIONNAME_RE.fullmatch(sectionname)
         if sectionname_m.group('element') != block_m.group('element'):
             print("WARNING: element symbol in pseudo description does not match section title for '{}', using section title element instead".format(sectionname))
             entry['element'] = sectionname_m.group('element')
