@@ -122,7 +122,11 @@ if __name__ == '__main__':
                 float(e['rcore']), float(e['qcore']))
 
         # lookup the electron configuration
-        e['conf'] = [n for n in ATOMDB['{element}-q{zion}'.format(**e)][0:3] if n is not None]
+        try:
+            e['conf'] = [n for n in ATOMDB['{element}-q{zion}'.format(**e)][0:3] if n is not None]
+        except KeyError:
+            print("# ERROR: no electron configuration found for {element}-q{zion}".format(**e))
+            continue
 
         if e['sprojector'] is not None:
             e['sprojector'][1] = int(e['sprojector'][1])
