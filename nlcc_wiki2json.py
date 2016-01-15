@@ -101,4 +101,4 @@ if __name__ == '__main__':
         entries.append(entry)
 
     with open('nlcc_params.json', 'w') as f:
-        json.dump(entries, f, indent=2)
+        json.dump(entries, f, indent=2, sort_keys=True)
